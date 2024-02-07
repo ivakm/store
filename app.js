@@ -1,21 +1,27 @@
 ﻿import Fastify from 'fastify';
-import jwt from '@fastify/jwt'
+import jwt from '@fastify/jwt';
 import createError from '@fastify/error';
-import main from './routes/main.js'
-import login from "./routes/login.js";
+import fastifyAutoload from '@fastify/autoload';
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
 
 const TestError = createError("TestError", "Something went wrong", 501);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 export async function build(opts) {
     const app = Fastify(opts)
     app.register(jwt, {
-        secret: "additionalTextForDecoding",
-        verify: { extractToken: (request) => request.headers.customauth }
+        secret: process.env.SECRET_KEY
     })
 
-    app.register(main);
-    app.register(login);
+    app.register(fastifyAutoload, {
+        dir: join(__dirname, 'plugins')
+    })
 
+    app.register(fastifyAutoload, {
+        dir: join(__dirname, 'routes')
+    })
 
     app.get('/error', async (request, reply) => {
         throw new TestError();
