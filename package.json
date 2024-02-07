@@ -13,6 +13,7 @@
   "type": "module",
   "dependencies": {
     "@fastify/error": "^3.4.1",
+    "@fastify/jwt": "^8.0.0",
     "@fastify/mongodb": "^8.0.0",
     "close-with-grace": "^1.2.0",
     "dotenv": "^16.4.1",
