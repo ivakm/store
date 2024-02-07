@@ -1,4 +1,7 @@
 ﻿import Fastify from 'fastify';
+import createError from '@fastify/error';
+
+const TestError = createError("TestError", "Something went wrong", 501);
 
 export async function build(opts) {
     const app = Fastify(opts)
@@ -13,6 +16,16 @@ export async function build(opts) {
 
     app.get('/test', async (request, reply) => {
         return { test: "test" }
+    })
+
+    app.get('/error', async (request, reply) => {
+        throw new TestError();
+    })
+
+    app.setErrorHandler(async function (err, request, reply) {
+        request.log.error({ err })
+        reply.status(err.statusCode || 500);
+        return { error: err.message }
     })
 
     return app;
